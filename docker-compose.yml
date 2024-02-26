@@ -1,0 +1,37 @@
+version: '3'
+
+services: 
+  postgresdb: 
+    image: postgres:latest
+    restart: unless-stopped
+    container_name: postgresdb
+    environment:
+      - POSTGRES_USER=${POSTGRESDB_USER}
+      - POSTGRES_PASSWORD=${POSTGRESDB_PASSWORD}
+      - POSTGRES_DB=${POSTGRESDB_DATABASE}
+    ports:
+      - ${POSTGRESDB_LOCAL_PORT}:${POSTGRESDB_DOCKER_PORT}
+  app:
+    image: oven/bun
+    container_name: server
+    volumes:
+      - .:/app
+    working_dir: "/app"
+    command: sh -c "bun install && bun run index.ts"
+    depends_on:
+      - postgresdb
+    restart: unless-stopped
+    environment:
+      - DB_HOST=postgresdb
+      - DB_USER=${POSTGRESDB_USER}
+      - DB_PASSWORD=${POSTGRESDB_PASSWORD}
+      - DB_NAME=${POSTGRESDB_DATABASE}
+      - DB_PORT=${POSTGRESDB_DOCKER_PORT}
+      - TZ=Europe/Prague
+    ports:
+      - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
