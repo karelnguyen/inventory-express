@@ -3,7 +3,7 @@ version: '3'
 services: 
   postgresdb: 
     image: postgres:latest
-    restart: unless-stopped
+    # restart: unless-stopped
     container_name: postgresdb
     environment:
       - POSTGRES_USER=${POSTGRESDB_USER}
